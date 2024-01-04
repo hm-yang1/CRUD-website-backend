@@ -16,15 +16,20 @@ Requirements:
 3. .env file for sensitive information (See sample below)
 
 Sample Env:
-    # Below are absolutely neccessary for the code to run, pls don't change the names.
+
+    # Below are absolutely neccessary for the code to run, pls don't change the names. 
+    #If u want to add more, u probably know more than me so feel free ig.
+    
     # Database variables
     DB_USER = your_database_user 
     DB_PASSWORD = your_database_password
     DB_NAME = your_database_name
     DB_HOST = your_database_host
     DB_PORT = your_database_port
+    
     # Sessions variables
     SESSION_SECRET = your_key
     JWT_SECRET = your_key
+    
     #Web
     PORT = ""
