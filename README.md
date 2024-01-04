@@ -1,4 +1,4 @@
-#Go api backend for a web forum
+**Go api backend for a web forum**
 
 Features:
 1. Account-based authentication
