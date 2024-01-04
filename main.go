@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"server/models"
 	"server/router"
 	"server/sessions"
@@ -22,5 +23,10 @@ func main() {
 	fmt.Println("Server running on port 8080")
 	handler := router.SetupCORS(r)
 	http.Handle("/", handler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
