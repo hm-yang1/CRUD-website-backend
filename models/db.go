@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -12,7 +13,6 @@ import (
 var DataBase *sql.DB
 
 func InitDB() {
-	//pls use env variables for the database
 	dbUser := os.Getenv("DB_USER")
 	dbPass := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_NAME")
