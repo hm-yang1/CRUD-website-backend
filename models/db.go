@@ -14,18 +14,19 @@ import (
 var DataBase *sql.DB
 
 func InitDB() {
-	dbUser := os.Getenv("DB_USER")
-	dbPass := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
+	// dbUser := os.Getenv("DB_USER")
+	// dbPass := os.Getenv("DB_PASSWORD")
+	// dbName := os.Getenv("DB_NAME")
+	// dbHost := os.Getenv("DB_HOST")
+	// dbPort := os.Getenv("DB_PORT")
 
-	// Create a MySQL DSN (Data Source Name)
-	dataSourceName := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", dbUser, dbPass, dbName, dbHost, dbPort)
+	// Create a Postgres sql DSN (Data Source Name)
+	// dataSourceName := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", dbUser, dbPass, dbName, dbHost, dbPort)
 
+	dbURL := os.Getenv("DB_URL")
 	// Open a database connection
 	var err error
-	DataBase, err = sql.Open("postgres", dataSourceName)
+	DataBase, err = sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatal(err)
 	}

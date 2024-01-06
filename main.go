@@ -8,15 +8,13 @@ import (
 	"server/models"
 	"server/router"
 	"server/sessions"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 	sessions.InitSession()
 	models.InitDB()
 	r := router.Router()
