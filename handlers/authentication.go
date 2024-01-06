@@ -88,14 +88,12 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to get session", http.StatusInternalServerError)
 		return
 	}
-	//Clear jwt
+	// Clear jwt
 	delete(session.Values, "jwt-token")
-	err = session.Save(r, w)
-	if err != nil {
-		http.Error(w, "Failed to save session", http.StatusInternalServerError)
-		return
-	}
+	// Set MaxAge to -1 for immediate expiration
 	session.Options.MaxAge = -1
+
+	// Save the session with updated MaxAge
 	err = session.Save(r, w)
 	if err != nil {
 		http.Error(w, "Failed to save session", http.StatusInternalServerError)
