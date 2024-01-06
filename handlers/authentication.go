@@ -67,6 +67,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
+		Domain:   "https://web-forum-jmof.onrender.com/",
 	}
 	session.Values["jwt-token"] = token
 	err = session.Save(r, w)
