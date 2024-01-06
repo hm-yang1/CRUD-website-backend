@@ -122,18 +122,18 @@ func createTagsTable() {
 	}
 	fmt.Println("Created tags table in mysql")
 
-	// insertTags := `
-	// INSERT INTO cvwo_assignment.tags (name)
-	// VALUES
-	// 	('recommendation'),
-	// 	('compatibility'),
-	// 	('troubleshooting'),
-	// 	('deals');
-	// `
-	// if _, err := DataBase.Exec(insertTags); err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println("Inserted tags into tags table")
+	insertTags := `
+	INSERT INTO cvwo_assignment.tags (name)
+	VALUES
+		('recommendation'),
+		('compatibility'),
+		('troubleshooting'),
+		('deals');
+	`
+	if _, err := DataBase.Exec(insertTags); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Inserted tags into tags table")
 
 	//Create many to many table to filter posts by tags
 	createPostTagsTable := `
