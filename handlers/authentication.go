@@ -92,7 +92,13 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	// Clear jwt
 	delete(session.Values, "jwt-token")
 	// Set MaxAge to -1 for immediate expiration
-	session.Options.MaxAge = -1
+	session.Options = &s.Options{
+		Path:     "/",
+		MaxAge:   -1, // Immediate expiration for logout
+		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true, // Set to true if your site is served over HTTPS
+	}
 
 	// Save the session with updated MaxAge
 	err = session.Save(r, w)
