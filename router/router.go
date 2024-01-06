@@ -53,7 +53,7 @@ func Router() *mux.Router {
 func SetupCORS(handler http.Handler) http.Handler {
 	// Create a CORS handler
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedOrigins:   []string{"https://web-forum-yw1j.onrender.com"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,
