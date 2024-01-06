@@ -65,15 +65,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		MaxAge:   60 * 60 * 24 * 7,
 		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true,
 	}
 	session.Values["jwt-token"] = token
 	err = session.Save(r, w)
 	if err != nil {
 		http.Error(w, "Failed to save session", http.StatusInternalServerError)
-		return
-	}
-	if err != nil {
-		http.Error(w, "Error creating JSON response", http.StatusInternalServerError)
 		return
 	}
 	//Set response headers
