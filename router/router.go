@@ -37,8 +37,8 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/comments/{commentid}", middleware.IsCommentEditAuthorized(handlers.DeleteCommentHandler)).Methods("DELETE")
 
 	//Upvotes routes
-	router.HandleFunc("/api/upvotes/posts/{postid}", middleware.AuthRequired(handlers.GetPostUpvoteHandler)).Methods("GET")
-	router.HandleFunc("/api/upvotes/comments/{commentid}", middleware.AuthRequired(handlers.GetCommentUpvoteHandler)).Methods("GET")
+	router.HandleFunc("/api/upvotes/posts/{postid}", handlers.GetPostUpvoteHandler).Methods("GET")
+	router.HandleFunc("/api/upvotes/comments/{commentid}", handlers.GetCommentUpvoteHandler).Methods("GET")
 	router.HandleFunc("/api/upvotes/add", middleware.AuthRequired(handlers.AddUpvoteHandler)).Methods("POST")
 	router.HandleFunc("/api/upvotes/remove", middleware.AuthRequired(handlers.DeleteUpvoteHandler)).Methods("POST")
 
