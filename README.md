@@ -21,15 +21,11 @@ Sample Env:
     #If u want to add more, u probably know more than me so feel free ig.
     
     # Database variables
-    DB_USER = your_database_user 
-    DB_PASSWORD = your_database_password
-    DB_NAME = your_database_name
-    DB_HOST = your_database_host
-    DB_PORT = your_database_port
+    DB_URL = your_db_url
     
     # Sessions variables
     SESSION_SECRET = your_key
     JWT_SECRET = your_key
     
     #Web
-    PORT = ""
+    PORT = your_own_port

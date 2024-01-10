@@ -36,7 +36,7 @@ func InitDB() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Connected to MySQL!")
+	fmt.Println("Connected to PostgresSql!")
 
 	createUserTable()
 	createPostsTable()
