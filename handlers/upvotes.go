@@ -180,11 +180,9 @@ func GetPostUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 	err = row.Scan(&upvote.Postid, &upvote.Username, &datetimeRaw)
 	if err == sql.ErrNoRows {
 		fmt.Println("No upvote:", err)
-		http.Error(w, "Upvote does not exist", http.StatusInternalServerError)
 		return
 	} else if err != nil {
 		fmt.Println("Error scanning upvote", err)
-		http.Error(w, "Failed to fetch upvote", http.StatusInternalServerError)
 		return
 	}
 	upvote.Datetime = dateTimeConverter(datetimeRaw)
@@ -213,11 +211,9 @@ func GetCommentUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 	err = row.Scan(&upvote.Commentid, &upvote.Username, &datetimeRaw)
 	if err == sql.ErrNoRows {
 		fmt.Println("No upvote:", err)
-		http.Error(w, "Upvote does not exist", http.StatusInternalServerError)
 		return
 	} else if err != nil {
 		fmt.Println("Error scanning upvote", err)
-		http.Error(w, "Failed to fetch upvote", http.StatusInternalServerError)
 		return
 	}
 	upvote.Datetime = dateTimeConverter(datetimeRaw)
