@@ -2,7 +2,9 @@ package router
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"server/handlers"
 	"server/middleware"
 
@@ -53,12 +55,15 @@ func Router() *mux.Router {
 }
 
 func SetupCORS(handler http.Handler) http.Handler { //Setup cors to allow frontend to connect. change origin if needed
+	frontendUrl := os.Getenv("FRONTEND_URL")
+	if frontendUrl == "" {
+		log.Fatal("allowed origins empty")
+	}
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://web-forum-jmof.onrender.com"},
+		AllowedOrigins:   []string{frontendUrl},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,
 	})
-
 	return c.Handler(handler)
 }

@@ -18,7 +18,6 @@ func main() {
 	sessions.InitSession()
 	models.InitDB()
 	r := router.Router()
-	fmt.Println("Server running on port 8080")
 	handler := router.SetupCORS(r)
 	http.Handle("/", handler)
 
@@ -26,5 +25,6 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+	fmt.Println("Server running on port 8080")
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
