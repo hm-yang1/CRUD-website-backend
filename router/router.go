@@ -44,14 +44,15 @@ func Router() *mux.Router {
 
 	//Tags route
 	router.HandleFunc("/api/tags", handlers.GetTagsHandler).Methods("GET")
+
 	//Profile routes
 	// router.HandleFunc("/api/profile/{username}", middleware.GetProfileHandler).Methods("GET")
+	//Don't feel like implementing this already
 
 	return router
 }
 
-func SetupCORS(handler http.Handler) http.Handler {
-	// Create a CORS handler
+func SetupCORS(handler http.Handler) http.Handler { //Setup cors to allow frontend to connect. change origin if needed
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"https://web-forum-jmof.onrender.com"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
@@ -59,6 +60,5 @@ func SetupCORS(handler http.Handler) http.Handler {
 		AllowCredentials: true,
 	})
 
-	// Use the CORS handler
 	return c.Handler(handler)
 }

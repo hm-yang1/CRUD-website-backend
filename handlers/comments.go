@@ -9,9 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	_ "github.com/lib/pq"
-	// _ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 //************** Comments Handlers *************
@@ -29,7 +28,6 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	//Sorting
 	sortBy := r.URL.Query().Get("sort_by")
 	query := "SELECT * FROM cvwo_assignment.comments WHERE comments_postid = $1"
-	// var args []interface{}
 	//Added sorting options
 	addedSortingQuery := addSorting(query, sortBy)
 	//Get all comments with same postid
@@ -59,14 +57,7 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		datetimeStr := string(datetimeRaw)
-		fmt.Println(datetimeStr)
-		datetime, err := time.Parse("2006-01-02T15:04:05.9999999Z", datetimeStr)
-		if err != nil {
-			// Handle the error, e.g., log it or return an error
-			fmt.Println("Error parsing datetime:", err)
-			return
-		}
+		datetime := dateTimeConverter(datetimeRaw)
 		comment.Datetime = datetime
 
 		comments = append(comments, comment)
@@ -103,13 +94,8 @@ func GetCommentHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to scan edited comment", http.StatusInternalServerError)
 		return
 	}
-	datetimeStr := string(datetimeRaw)
-	datetime, err := time.Parse("2006-01-02T15:04:05.9999999Z", datetimeStr)
-	if err != nil {
-		// Handle the error, e.g., log it or return an error
-		fmt.Println("Error parsing datetime:", err)
-		return
-	}
+
+	datetime := dateTimeConverter(datetimeRaw)
 	getComment.Datetime = datetime
 
 	w.Header().Set("Content-Type", "application/json")

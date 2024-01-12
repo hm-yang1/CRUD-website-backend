@@ -9,12 +9,12 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-// Pls store the keys in env variables thks
 var Store *sessions.CookieStore
 
 var jwtKey []byte
 
 func InitSession() {
+	//Set sessions and jwt keys. Also initialise cookie store
 	sessionPassword := os.Getenv("SESSION_SECRET")
 	if sessionPassword == "" {
 		panic("SESSION_SECRET environment variable not set")
@@ -29,7 +29,6 @@ func InitSession() {
 }
 
 func CreateJWT(username string) (string, error) {
-
 	claims := jwt.MapClaims{
 		"username":   username,
 		"expiration": time.Now().Add(time.Hour * 24 * 7).Unix(), //token expiration time,

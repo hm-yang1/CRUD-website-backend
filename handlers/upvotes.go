@@ -5,17 +5,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"server/middleware"
 	"server/models"
-	"server/sessions"
 	"strconv"
 	"time"
 
-	_ "github.com/lib/pq"
-	// _ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 func AddUpvoteHandler(w http.ResponseWriter, r *http.Request) {
+	//Changes the upvote number in posts/comments, inserts new addition to upvotes table
 	var addUpvoteRequest models.UpvoteRequest
 	err := json.NewDecoder(r.Body).Decode(&addUpvoteRequest)
 	if err != nil {
@@ -24,7 +24,7 @@ func AddUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(addUpvoteRequest)
 	//Check username
-	authUsername := checkUsername(r)
+	authUsername, _ := middleware.GetUsername(r)
 	if authUsername != addUpvoteRequest.Username {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -86,16 +86,13 @@ func AddUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	//Add upvote to upvotes table
-	fmt.Println(createdUpvote)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(createdUpvote)
 	fmt.Println("Upvotes inserted successfully")
 }
 
 func DeleteUpvoteHandler(w http.ResponseWriter, r *http.Request) {
-	//Edits the posts/comments table upvotes by minus 1 and deletes the row from upvotes table
-	//Bends rest principles but I want thoose 2 things to happen in 1 function
+	//Edits the posts/comments table upvotes and deletes the row from upvotes table
 	var deleteUpvoteRequest models.UpvoteRequest
 	err := json.NewDecoder(r.Body).Decode(&deleteUpvoteRequest)
 	if err != nil {
@@ -103,7 +100,7 @@ func DeleteUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//Check username
-	authUsername := checkUsername(r)
+	authUsername, _ := middleware.GetUsername(r)
 	if authUsername != deleteUpvoteRequest.Username {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -170,7 +167,7 @@ func GetPostUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid post ID", http.StatusBadRequest)
 		return
 	}
-	username := checkUsername(r)
+	username, _ := middleware.GetUsername(r)
 	row := models.DataBase.QueryRow("SELECT upvotes_postid, upvotes_username, datetime FROM cvwo_assignment.upvotes WHERE upvotes_postid = $1 AND upvotes_username = $2", postID, username)
 	var upvote models.Upvote
 	upvote = models.Upvote{
@@ -182,8 +179,8 @@ func GetPostUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 	var datetimeRaw []uint8
 	err = row.Scan(&upvote.Postid, &upvote.Username, &datetimeRaw)
 	if err == sql.ErrNoRows {
-		w.Header().Set("Content=Type", "application/json")
-		json.NewEncoder(w).Encode(upvote)
+		fmt.Println("No upvote:", err)
+		http.Error(w, "Upvote does not exist", http.StatusInternalServerError)
 		return
 	} else if err != nil {
 		fmt.Println("Error scanning upvote", err)
@@ -203,7 +200,7 @@ func GetCommentUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid post ID", http.StatusBadRequest)
 		return
 	}
-	username := checkUsername(r)
+	username, _ := middleware.GetUsername(r)
 	row := models.DataBase.QueryRow("SELECT upvotes_commentid, upvotes_username, datetime FROM cvwo_assignment.upvotes WHERE upvotes_commentid = $1 AND upvotes_username = $2", commentID, username)
 	var upvote models.Upvote
 	upvote = models.Upvote{
@@ -215,8 +212,8 @@ func GetCommentUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 	var datetimeRaw []uint8
 	err = row.Scan(&upvote.Commentid, &upvote.Username, &datetimeRaw)
 	if err == sql.ErrNoRows {
-		w.Header().Set("Content=Type", "application/json")
-		json.NewEncoder(w).Encode(upvote)
+		fmt.Println("No upvote:", err)
+		http.Error(w, "Upvote does not exist", http.StatusInternalServerError)
 		return
 	} else if err != nil {
 		fmt.Println("Error scanning upvote", err)
@@ -244,30 +241,12 @@ func rowExists(ID int, username string, post bool) (bool, error) {
 	return exists, nil
 }
 
-func checkUsername(r *http.Request) string {
-	session, _ := sessions.Store.Get(r, "session")
-	token, ok := session.Values["jwt-token"].(string)
-	if !ok {
-		return ""
-	}
-	claims, err := sessions.ParseJWT(token)
-	if err != nil {
-		return ""
-	}
-	authenticatedUsername, ok := claims["username"].(string)
-	if !ok {
-		return ""
-	}
-	return authenticatedUsername
-}
-
 func dateTimeConverter(datetimeRaw []uint8) time.Time {
 	datetimeStr := string(datetimeRaw)
 	datetime, err := time.Parse("2006-01-02T15:04:05.9999999Z", datetimeStr)
 	if err != nil {
-		// Handle the error, e.g., log it or return an error
 		fmt.Println("Error parsing datetime:", err)
-		return time.Now() //
+		return time.Now()
 	}
 	return datetime
 }

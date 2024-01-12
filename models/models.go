@@ -75,6 +75,7 @@ type Sorting struct {
 	Name      string `json:"name"`
 }
 
+// Some functions used by handlers
 func InitUser(username string, password string) User {
 	u := User{
 		Username:   username,

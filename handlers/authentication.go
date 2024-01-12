@@ -10,27 +10,24 @@ import (
 	"server/sessions"
 	"time"
 
-	_ "github.com/lib/pq"
-	// _ "github.com/go-sql-driver/mysql"
 	s "github.com/gorilla/sessions"
+	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // *************** Authentication Handlers ********************
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	// Parse JSON input
+	// Parses login request, compares passwords then creates session upon success
 	var loginRequest models.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	// Validate required fields
 	if loginRequest.Username == "" || loginRequest.Password == "" {
 		http.Error(w, "Username and password are required", http.StatusBadRequest)
 		return
 	}
-	//Query database for user
 	var hashedPassword string
 	err = models.DataBase.QueryRow("SELECT password FROM cvwo_assignment.users WHERE username = $1", loginRequest.Username).Scan(&hashedPassword)
 	if err != nil {
@@ -55,7 +52,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error creating jwt token", http.StatusInternalServerError)
 		return
 	}
-	//Creating session to store token
 	session, err := sessions.Store.Get(r, "session")
 	if err != nil {
 		http.Error(w, "Failed to get session", http.StatusInternalServerError)
@@ -75,7 +71,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to save session", http.StatusInternalServerError)
 		return
 	}
-	//Set response headers
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message": "Login successful"}`))
@@ -83,7 +79,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Entered logout handler")
+	//Checks for session then clears the session
 	session, err := sessions.Store.Get(r, "session")
 	if err != nil {
 		http.Error(w, "Failed to get session", http.StatusInternalServerError)
@@ -113,7 +109,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	//Parse JSON input
+	//Parse register request, checks requried fields, insert user into db
 	var registerRequest models.RegisterRequest
 	err := json.NewDecoder(r.Body).Decode(&registerRequest)
 	if err != nil {

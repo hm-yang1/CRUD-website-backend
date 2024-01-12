@@ -8,12 +8,12 @@ import (
 	"os"
 
 	_ "github.com/lib/pq"
-	// _ "github.com/go-sql-driver/mysql"
 )
 
 var DataBase *sql.DB
 
 func InitDB() {
+	//Opens database connection and creates the neccessary tables.
 	// dbUser := os.Getenv("DB_USER")
 	// dbPass := os.Getenv("DB_PASSWORD")
 	// dbName := os.Getenv("DB_NAME")
@@ -24,7 +24,6 @@ func InitDB() {
 	// dataSourceName := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", dbUser, dbPass, dbName, dbHost, dbPort)
 
 	dbURL := os.Getenv("DB_URL")
-	// Open a database connection
 	var err error
 	DataBase, err = sql.Open("postgres", dbURL)
 	if err != nil {
@@ -110,7 +109,7 @@ func createTagsTable() {
 	// if _, err := DataBase.Exec(clearTable); err != nil {
 	// 	log.Fatal(err)
 	// }
-	fmt.Println("Deleted potential tags table")
+	// fmt.Println("Deleted potential tags table")
 	//Create table to store tags
 	createTable := `
 	CREATE TABLE IF NOT EXISTS cvwo_assignment.tags (
@@ -159,6 +158,7 @@ func createTagsTable() {
 }
 
 func createUpvotesTable() {
+	//Creates many to many upvotes table
 	createTable := `
 	CREATE TABLE IF NOT EXISTS cvwo_assignment.upvotes (
 		id SERIAL PRIMARY KEY,

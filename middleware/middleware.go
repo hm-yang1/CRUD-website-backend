@@ -8,14 +8,13 @@ import (
 	"server/sessions"
 	"strconv"
 
-	_ "github.com/lib/pq"
-	// _ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 // ******************** Authorisation checks ***********************
-// Checks is session present, technically a handler not a middleware
 func SessionHandler(w http.ResponseWriter, r *http.Request) {
+	// Checks if session present
 	fmt.Println("Session Checker fired")
 	session, _ := sessions.Store.Get(r, "session")
 	token, ok := session.Values["jwt-token"].(string)
@@ -32,8 +31,8 @@ func SessionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"message": "Session present"}`))
 }
 
-// AuthRequried checks if user has a session
 func AuthRequired(handler http.HandlerFunc) http.HandlerFunc {
+	// middleware to check if user has a session. If present, allows handler to go through
 	fmt.Println("AuthRequired fired")
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, _ := sessions.Store.Get(r, "session")
@@ -50,10 +49,12 @@ func AuthRequired(handler http.HandlerFunc) http.HandlerFunc {
 		handler.ServeHTTP(w, r)
 	}
 }
+
 func IsCommentEditAuthorized(handler http.HandlerFunc) http.HandlerFunc {
+	//Checks if comment edit is allowed by comparing session username and comment username
 	return func(w http.ResponseWriter, r *http.Request) {
 		//Get username from jwt in session
-		authenticatedUsername, err := getUsername(r)
+		authenticatedUsername, err := GetUsername(r)
 		if err != nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
@@ -79,16 +80,18 @@ func IsCommentEditAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 		handler.ServeHTTP(w, r)
 	}
 }
+
 func IsPostEditAuthorized(handler http.HandlerFunc) http.HandlerFunc {
+	//Checks if post edit is allowed by comparing session username and post username
 	return func(w http.ResponseWriter, r *http.Request) {
 		//Get username from session
-		authenticatedUsername, err := getUsername(r)
+		authenticatedUsername, err := GetUsername(r)
 		if err != nil {
 			http.Error(w, "No username", http.StatusUnauthorized)
 			return
 		}
 		fmt.Println(authenticatedUsername)
-		//Parse comment id from request parameters
+		//Parse post id from request parameters
 		params := mux.Vars(r)
 		postIDStr := params["postid"]
 		postID, err := strconv.Atoi(postIDStr)
@@ -110,7 +113,7 @@ func IsPostEditAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func getUsername(r *http.Request) (string, error) {
+func GetUsername(r *http.Request) (string, error) {
 	//Gets username from jwt in session
 	session, err := sessions.Store.Get(r, "session")
 	token, ok := session.Values["jwt-token"].(string)
@@ -122,7 +125,6 @@ func getUsername(r *http.Request) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	//Getting username from jwt
 	authenticatedUsername, ok := claims["username"].(string)
 	if !ok {
 		err = errors.New("Failed to get username from jwt")

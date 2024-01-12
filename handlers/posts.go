@@ -8,17 +8,14 @@ import (
 	"net/http"
 	"server/models"
 	"strconv"
-	"time"
 
-	_ "github.com/lib/pq"
-	// _ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 // ************Posts handlers*****************
 func GetPostsHandler(w http.ResponseWriter, r *http.Request) {
 	//Extract sorting options from query parameters +
-	//trial for pagination
 	sortBy := r.URL.Query().Get("sort_by")
 	pageStr := r.URL.Query().Get("page")
 	perPageStr := r.URL.Query().Get("perPage")
@@ -77,6 +74,7 @@ func GetPostByIdHandler(w http.ResponseWriter, r *http.Request) { //Get post by 
 }
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
+	//Recieves post request then inserts it into post table and insert tags into posttags table
 	var newPost models.PostRequest
 	err := json.NewDecoder(r.Body).Decode(&newPost)
 	if err != nil {
@@ -102,7 +100,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = insertTagsForPost(postID, newPost.Tags)
 	if err != nil {
-		http.Error(w, "Questionable Tags", http.StatusBadRequest)
+		http.Error(w, "Failed to insert tags to create psot", http.StatusBadRequest)
 		return
 	}
 	fmt.Println("Tags inserted successfully")
@@ -112,7 +110,6 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func EditPostHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("entered editPost handler")
 	params := mux.Vars(r)
 	postIDStr := params["postid"]
 	postID, err := strconv.Atoi(postIDStr)
@@ -147,11 +144,10 @@ func EditPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(editedPost)
+	fmt.Println("editPost handler worked")
 }
 
 func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Entered delete post")
-	//Get post id
 	params := mux.Vars(r)
 	postIDStr := params["postid"]
 	postID, err := strconv.Atoi(postIDStr)
@@ -199,17 +195,10 @@ func scanPosts(rows *sql.Rows) ([]models.Post, error) {
 		}
 		var tags []string
 		if err := json.Unmarshal(tagsJSON, &tags); err != nil {
-			// Handle the error, e.g., log it or return an error
 			fmt.Println("Error unmarshaling JSON:", err)
 			return nil, err
 		}
-		datetimeStr := string(datetimeRaw)
-		datetime, err := time.Parse("2006-01-02T15:04:05.9999999Z", datetimeStr)
-		if err != nil {
-			// Handle the error, e.g., log it or return an error
-			fmt.Println("Error parsing datetime:", err)
-			return nil, err
-		}
+		datetime := dateTimeConverter(datetimeRaw)
 		post.Tags = tags
 		post.Datetime = datetime
 		posts = append(posts, post)
@@ -237,17 +226,10 @@ func getPostById(postID int) (models.Post, error) {
 	//Additional processing of tags and datetime
 	var tags []string
 	if err := json.Unmarshal(tagsJSON, &tags); err != nil {
-		// Handle the error, e.g., log it or return an error
 		fmt.Println("Error unmarshaling JSON:", err)
 		return models.Post{}, err
 	}
-	datetimeStr := string(datetimeRaw)
-	datetime, err := time.Parse("2006-01-02T15:04:05.9999999Z", datetimeStr)
-	if err != nil {
-		// Handle the error, e.g., log it or return an error
-		fmt.Println("Error parsing datetime:", err)
-		return models.Post{}, err
-	}
+	datetime := dateTimeConverter(datetimeRaw)
 	post.Tags = tags
 	post.Datetime = datetime
 	return post, nil

@@ -9,13 +9,12 @@ import (
 	"strings"
 
 	_ "github.com/lib/pq"
-	// _ "github.com/go-sql-driver/mysql"
 )
 
 // **********Tags handlers*****************
 func GetTagsHandler(w http.ResponseWriter, r *http.Request) {
+	//Get all tags from database
 	query := "SELECT * FROM cvwo_assignment.tags"
-	//Query DB
 	rows, err := models.DataBase.Query(query)
 	if err != nil {
 		http.Error(w, "Failed to get posts", http.StatusInternalServerError)
@@ -45,7 +44,6 @@ func GetTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetFilteredPostsHandler(w http.ResponseWriter, r *http.Request) {
 	//Get posts filtered by tags
-	//Get queries
 	tagNames := r.URL.Query()["tag"]
 	sortBy := r.URL.Query().Get("sort_by")
 	pageStr := r.URL.Query().Get("page")
@@ -152,7 +150,7 @@ func getTagIdFromTagName(tagNames []string) ([]int, error) {
 
 func getPostIdsFromTagId(tagIds []int) ([]int, error) {
 	if len(tagIds) == 0 {
-		return nil, nil // No tag IDs provided, return an empty result
+		return nil, nil
 	}
 	// Construct placeholders for the IN clause
 	placeholders := make([]string, len(tagIds))
@@ -189,8 +187,6 @@ func getPostIdsFromTagId(tagIds []int) ([]int, error) {
 	}
 	fmt.Println("Post ids:", postIds)
 	return postIds, nil
-
-	//worked with psotgres
 }
 
 func getFilteredPosts(tagNames []string, sortBy string, pageStr string, perPageStr string) ([]models.Post, error) {
