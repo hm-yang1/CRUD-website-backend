@@ -179,10 +179,13 @@ func GetPostUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 	var datetimeRaw []uint8
 	err = row.Scan(&upvote.Postid, &upvote.Username, &datetimeRaw)
 	if err == sql.ErrNoRows {
+		w.Header().Set("Content=Type", "application/json")
+		json.NewEncoder(w).Encode(upvote)
 		fmt.Println("No upvote:", err)
 		return
 	} else if err != nil {
 		fmt.Println("Error scanning upvote", err)
+		http.Error(w, "Invalid post ID", http.StatusBadRequest)
 		return
 	}
 	upvote.Datetime = dateTimeConverter(datetimeRaw)
@@ -210,10 +213,13 @@ func GetCommentUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 	var datetimeRaw []uint8
 	err = row.Scan(&upvote.Commentid, &upvote.Username, &datetimeRaw)
 	if err == sql.ErrNoRows {
+		w.Header().Set("Content=Type", "application/json")
+		json.NewEncoder(w).Encode(upvote)
 		fmt.Println("No upvote:", err)
 		return
 	} else if err != nil {
 		fmt.Println("Error scanning upvote", err)
+		http.Error(w, "Invalid comment id", http.StatusInternalServerError)
 		return
 	}
 	upvote.Datetime = dateTimeConverter(datetimeRaw)
