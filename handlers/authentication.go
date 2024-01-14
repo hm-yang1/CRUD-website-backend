@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"server/models"
 	"server/sessions"
 	"time"
@@ -57,13 +58,17 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to get session", http.StatusInternalServerError)
 		return
 	}
+	frontendUrl := os.Getenv("FRONTEND_URL")
+	if frontendUrl == "" {
+		log.Fatal("allowed origins empty")
+	}
 	session.Options = &s.Options{
 		Path:     "/",
 		MaxAge:   60 * 60 * 24 * 7,
 		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
-		Domain:   "https://web-forum-jmof.onrender.com/",
+		Domain:   frontendUrl,
 	}
 	session.Values["jwt-token"] = token
 	err = session.Save(r, w)
