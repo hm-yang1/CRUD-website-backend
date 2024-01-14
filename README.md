@@ -12,7 +12,7 @@ Features:
 
 Requirements:
 1. Go 1.21.4
-2. PostgreSQL 15
+2. PostgreSQL 15 server
 3. .env file for sensitive information (See sample below)
 
 Sample Env:
@@ -28,4 +28,4 @@ Sample Env:
     
     #Web
     PORT = your_own_port
-    FRONTEND_URL = your_frontend
+    FRONTEND_URL = your_frontend_url
