@@ -13,6 +13,8 @@ Features:
 Requirements:
 1. Go 1.21.4
 2. PostgreSQL 15 server
+    a. Schema named cvwo
+    b. Write the DB connection url
 3. .env file for sensitive information (See sample below)
 
 Sample Env:
