@@ -181,7 +181,6 @@ func GetPostUpvoteHandler(w http.ResponseWriter, r *http.Request) {
 	if err == sql.ErrNoRows {
 		w.Header().Set("Content=Type", "application/json")
 		json.NewEncoder(w).Encode(upvote)
-		fmt.Println("No upvote:", err)
 		return
 	} else if err != nil {
 		fmt.Println("Error scanning upvote", err)
