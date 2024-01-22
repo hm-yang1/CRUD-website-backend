@@ -1,5 +1,8 @@
 **Go api backend for a web forum**
 
+Link: https://cvwo-assignment-backend.onrender.com/ 
+(Might not work with other domains due to CORS)
+
 Features:
 1. Account-based authentication
 2. Hash password with bcrypt and stores sessions with gorilla sessions
